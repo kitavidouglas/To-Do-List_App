@@ -1,0 +1,48 @@
+/* src/components/WelcomePage.css */
+
+.welcome-container {
+    background: #f5f5f5; /* Light grey background for a clean look */
+    padding: 2rem; /* Extra padding for spacing */
+}
+
+.card {
+    border-radius: 12px; /* Rounded corners for a modern look */
+    border: none; /* Remove default border */
+}
+
+.card-body {
+    padding: 2rem; /* Comfortable padding inside the card */
+}
+
+.card-title {
+    font-size: 2rem; /* Larger title font for emphasis */
+    font-weight: 700; /* Bold title for prominence */
+    color: #333; /* Darker text color for better readability */
+}
+
+.card-text {
+    font-size: 1.1rem; /* Slightly larger font for readability */
+    color: #666; /* Slightly lighter text color for less emphasis */
+    margin-bottom: 2rem; /* Spacing below the text */
+}
+
+.button {
+    margin-top: 1.5rem;
+}
+
+.shadow-lg {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.btn-primary {
+    background-color: #007bff; /* Bootstrap primary color */
+    border-color: #007bff; /* Consistent border color */
+    border-radius: 25px; /* Rounded button corners */
+    padding: 10px 20px; /* Padding inside the button */
+    font-size: 1.1rem; /* Slightly larger font size for better legibility */
+}
+
+.btn-primary:hover {
+    background-color: #0056b3; /* Darker shade on hover for interaction feedback */
+    border-color: #004085; /* Consistent border color on hover */
+}

@@ -1,20 +1,21 @@
-// src/App.js
 import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import SignUp from './components/SignUp';
 import LoginForm from './components/LoginForm';
-import Welcome from './components/Welcome';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css';
+import WelcomePage from './components/WelcomePage';
+import Home from './components/Home';
 
 function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<LoginForm />} />
-        <Route path="/welcome" element={<Welcome />} />
-      </Routes>
-    </Router>
-  );
+    return (
+        <Router>
+            <Routes>
+                <Route path="/" element={<WelcomePage />} /> {/* Landing page */}
+                <Route path="/signup" element={<SignUp />} /> {/* Sign-up form */}
+                <Route path="/login" element={<LoginForm />} /> {/* Login form */}
+                <Route path="/home" element={<Home />} /> {/* To-do list/home page */}
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;

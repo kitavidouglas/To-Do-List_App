@@ -1,31 +1,28 @@
-// server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const app = express();
-const port = 5000;
+const User = require('./models/User'); // Import User model
 
+const app = express();
+const port = process.env.PORT || 5000;
+
+// Middleware
 app.use(bodyParser.json());
 app.use(cors());
 
 // Connect to MongoDB
-mongoose.connect('mongodb://localhost:27017/authDB')
+mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/authDB', { 
+  useNewUrlParser: true, 
+  useUnifiedTopology: true 
+})
   .then(() => console.log('MongoDB connected'))
-  .catch(err => console.log(err));
-
-// Define User Schema
-const userSchema = new mongoose.Schema({
-  email: String,
-  password: String
-});
-
-const User = mongoose.model('User', userSchema);
+  .catch(err => console.log('MongoDB connection error:', err));
 
 // Secret key for JWT
-const JWT_SECRET = 'your_jwt_secret_key';
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key'; // Ensure this is secure in production
 
 // Login route
 app.post('/login', async (req, res) => {
@@ -46,7 +43,8 @@ app.post('/login', async (req, res) => {
 
 // Middleware to protect routes
 const authenticateJWT = (req, res, next) => {
-  const token = req.header('Authorization')?.split(' ')[1];
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
   if (token) {
     jwt.verify(token, JWT_SECRET, (err, user) => {
       if (err) {
@@ -64,6 +62,10 @@ const authenticateJWT = (req, res, next) => {
 app.get('/profile', authenticateJWT, (req, res) => {
   res.json({ message: `Welcome, ${req.user.email}` });
 });
+
+// Use auth routes from routes/auth.js
+const authRouter = require('./routes/auth');
+app.use('/auth', authRouter);
 
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
