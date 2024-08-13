@@ -33,33 +33,39 @@ const LoginForm = () => {
         setIsSubmitting(true);
 
         try {
+            // Send login request to backend
             const response = await axios.post(`${API_URL}/login`, { email, password });
+
             if (response.data.token) {
                 try {
-                    localStorage.setItem('token', response.data.token); // Store token
+                    localStorage.setItem('token', response.data.token); // Store token in localStorage
                 } catch (storageError) {
                     console.error('Error storing token:', storageError);
                     setMessage('Error storing login token.');
                     return;
                 }
-                setMessage('Login successful!');
+                setMessage('Login successful! Redirecting to home page...');
                 setTimeout(() => {
-                    navigate('/welcome');
+                    navigate('/home'); // Redirect to the home page
                 }, 2000);
             } else {
-                setMessage('Unexpected response from the server');
+                setMessage(response.data.message || 'Login failed. Please try again.');
             }
         } catch (error) {
             if (error.response && error.response.data) {
-                setMessage(error.response.data.message || 'Unexpected server error');
+                setMessage(error.response.data.message || 'Login failed. Please try again.');
             } else if (error.request) {
                 setMessage('Network error. Please try again later.');
             } else {
-                setMessage('Error connecting to the server');
+                setMessage('Error connecting to the server.');
             }
         } finally {
             setIsSubmitting(false);
         }
+    };
+
+    const handleGoHome = () => {
+        navigate('/home');
     };
 
     return (
@@ -99,6 +105,14 @@ const LoginForm = () => {
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? <Spinner animation="border" size="sm" /> : 'Login'}
+                        </Button>
+
+                        <Button 
+                            variant="secondary" 
+                            className="w-100 mt-2" 
+                            onClick={handleGoHome}
+                        >
+                            Home
                         </Button>
                     </Form>
                     {message && <p className="text-center mt-3 text-danger">{message}</p>}

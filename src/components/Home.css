@@ -1,0 +1,147 @@
+/* Container for the card grid */
+.card-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Spacing between cards */
+    justify-content: space-between; /* Align cards with space between */
+}
+
+/* Each card should take up 48% of the width */
+.card {
+    flex: 1 1 calc(50% - 20px); /* Adjust width to fit 2 per row */
+    box-sizing: border-box;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    padding: 15px; /* Add padding inside card */
+    margin-bottom: 20px; /* Add margin at the bottom for spacing */
+}
+
+/* Card hover effect */
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* Card Title styling */
+.card-title {
+    font-size: 1.25rem;
+    color: #333;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-title .icon {
+    margin-right: 8px;
+}
+
+/* Add Task Button styling */
+.add-task-btn {
+    background-color: #FF6347;
+    border: none;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    display: block;
+    text-align: center;
+    cursor: pointer;
+    margin-top: 10px; /* Add margin for spacing */
+}
+
+.add-task-btn:hover {
+    background-color: #e55347;
+}
+/* Sidebar styling */
+.sidebar {
+    height: 100vh;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    background-color: #f8f9fa; /* Light background color to match the container */
+}
+
+/* Sidebar content alignment */
+.sidebar-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* User profile styling */
+.user-profile {
+    text-align: center;
+}
+
+.profile-img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    border: 2px solid #007bff;
+    object-fit: cover;
+}
+
+.profile-name {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: #343a40;
+    margin-top: 10px;
+}
+
+/* Sidebar button styling */
+.sidebar-button {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #ffffff;
+    color: #495057;
+    font-size: 1rem;
+    padding: 10px 15px; /* Add horizontal padding */
+    text-align: left;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    text-decoration: none; /* Remove underline */
+}
+
+.sidebar-button svg {
+    margin-right: 10px;
+}
+
+/* Sidebar button hover effect */
+.sidebar-button:hover {
+    background-color: #f0f0f0; /* Subtle background change */
+    color: #007bff; /* Change text color on hover */
+    border-color: #007bff; /* Highlight border color on hover */
+    animation: blink 0.6s step-start; /* Blinking effect */
+}
+
+/* Blinking effect keyframes */
+@keyframes blink {
+    50% {
+        background-color: #e0e0e0; /* Slightly different background color */
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .sidebar {
+        padding: 10px;
+    }
+
+    .profile-img {
+        width: 50px;
+        height: 50px;
+    }
+
+    .profile-name {
+        font-size: 1rem;
+    }
+
+    .sidebar-button {
+        font-size: 0.9rem;
+        padding: 8px 10px;
+    }
+}

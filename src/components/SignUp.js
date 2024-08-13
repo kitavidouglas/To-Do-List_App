@@ -20,10 +20,10 @@ const SignUp = () => {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-        
+
         // Clear previous messages
         setMessage('');
-        
+
         // Basic validation
         if (!email || !password || !confirmPassword) {
             setMessage('Please fill in all fields.');
@@ -45,8 +45,11 @@ const SignUp = () => {
         setIsSubmitting(true);
 
         try {
-            const response = await axios.post(`${API_URL}/signup`, { email, password });
-            if (response.data && response.data.message === 'User registered successfully') {
+            // Send the request to the backend to register the user
+            const response = await axios.post(`${API_URL}/register`, { email, password });
+
+            // Check the response status and message
+            if (response.status === 201 && response.data.message === 'User registered successfully') {
                 setMessage('Sign up successful! Redirecting to login...');
                 setTimeout(() => {
                     navigate('/login');
@@ -57,8 +60,10 @@ const SignUp = () => {
         } catch (error) {
             if (error.response && error.response.data) {
                 setMessage('Error: ' + error.response.data.message);
+                console.error('Error response:', error.response.data);
             } else {
                 setMessage('Error connecting to the server');
+                console.error('Connection error:', error.message);
             }
         } finally {
             setIsSubmitting(false);
