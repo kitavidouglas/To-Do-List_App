@@ -4,8 +4,11 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
-const User = require('./models/User'); // Import User model
-require('dotenv').config(); // Load environment variables from .env file
+const User = require('./models/User');
+const Task = require('./models/Task'); // Import Task model
+const Event = require('./models/Event'); // Import Event model
+const Notification = require('./models/Notification'); // Import Notification model
+require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 5000;
@@ -24,28 +27,21 @@ mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/authDB')
   .catch(err => console.error('MongoDB connection error:', err));
 
 // Secret key for JWT
-const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key'; // Ensure this is secure in production
+const JWT_SECRET = process.env.JWT_SECRET || 'your_jwt_secret_key';
 
 // Login route
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
-      // Find the user by email
       const user = await User.findOne({ email });
       if (!user) {
           return res.status(401).json({ message: 'Invalid email or password' });
       }
-
-      // Compare the provided password with the stored hash
       const isMatch = bcrypt.compareSync(password, user.password);
       if (!isMatch) {
           return res.status(401).json({ message: 'Invalid email or password' });
       }
-
-      // Generate a token if needed (optional)
       const token = generateToken(user); // Replace with your token generation logic
-
-      // Send the token and success message
       return res.status(200).json({ message: 'Login successful', token });
   } catch (error) {
       console.error('Login error:', error.stack);
@@ -79,25 +75,13 @@ app.get('/profile', authenticateJWT, (req, res) => {
 app.post('/register', async (req, res) => {
   const { email, password } = req.body;
   try {
-      // Check if the user already exists
       const existingUser = await User.findOne({ email });
       if (existingUser) {
           return res.status(409).json({ message: 'User already exists' });
       }
-
-      // Hash the password before saving it
       const hashedPassword = bcrypt.hashSync(password, 10);
-
-      // Create a new user
-      const newUser = new User({
-          email,
-          password: hashedPassword
-      });
-
-      // Save the user to the database
+      const newUser = new User({ email, password: hashedPassword });
       await newUser.save();
-
-      // Send a success message with the correct status code
       return res.status(201).json({ message: 'User registered successfully' });
   } catch (error) {
       console.error('Register error:', error.stack);
@@ -105,9 +89,110 @@ app.post('/register', async (req, res) => {
   }
 });
 
+// Task CRUD operations
+app.post('/tasks', authenticateJWT, async (req, res) => {
+  const { title, description, dueDate } = req.body;
+  try {
+    const newTask = new Task({
+      title,
+      description,
+      dueDate,
+      user: req.user.id, // Associate task with the logged-in user
+    });
+    await newTask.save();
+    res.status(201).json({ message: 'Task created successfully', task: newTask });
+  } catch (error) {
+    console.error('Error creating task:', error.stack);
+    res.status(500).json({ message: 'Error creating task', error: error.message });
+  }
+});
 
+app.get('/tasks', authenticateJWT, async (req, res) => {
+  try {
+    const tasks = await Task.find({ user: req.user.id });
+    res.status(200).json(tasks);
+  } catch (error) {
+    console.error('Error fetching tasks:', error.stack);
+    res.status(500).json({ message: 'Error fetching tasks', error: error.message });
+  }
+});
 
-// Home route (optional)
+app.put('/tasks/:id', authenticateJWT, async (req, res) => {
+  const { title, description, dueDate } = req.body;
+  try {
+    const updatedTask = await Task.findByIdAndUpdate(req.params.id, { title, description, dueDate }, { new: true });
+    res.status(200).json({ message: 'Task updated successfully', task: updatedTask });
+  } catch (error) {
+    console.error('Error updating task:', error.stack);
+    res.status(500).json({ message: 'Error updating task', error: error.message });
+  }
+});
+
+app.delete('/tasks/:id', authenticateJWT, async (req, res) => {
+  try {
+    await Task.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: 'Task deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting task:', error.stack);
+    res.status(500).json({ message: 'Error deleting task', error: error.message });
+  }
+});
+
+// Event Management
+app.post('/events', authenticateJWT, async (req, res) => {
+  const { title, description, date } = req.body;
+  try {
+    const newEvent = new Event({
+      title,
+      description,
+      date,
+      user: req.user.id,
+    });
+    await newEvent.save();
+    res.status(201).json({ message: 'Event created successfully', event: newEvent });
+  } catch (error) {
+    console.error('Error creating event:', error.stack);
+    res.status(500).json({ message: 'Error creating event', error: error.message });
+  }
+});
+
+app.get('/events', authenticateJWT, async (req, res) => {
+  try {
+    const events = await Event.find({ user: req.user.id });
+    res.status(200).json(events);
+  } catch (error) {
+    console.error('Error fetching events:', error.stack);
+    res.status(500).json({ message: 'Error fetching events', error: error.message });
+  }
+});
+
+// Notification Management
+app.post('/notifications', authenticateJWT, async (req, res) => {
+  const { message } = req.body;
+  try {
+    const newNotification = new Notification({
+      message,
+      user: req.user.id,
+    });
+    await newNotification.save();
+    res.status(201).json({ message: 'Notification created successfully', notification: newNotification });
+  } catch (error) {
+    console.error('Error creating notification:', error.stack);
+    res.status(500).json({ message: 'Error creating notification', error: error.message });
+  }
+});
+
+app.get('/notifications', authenticateJWT, async (req, res) => {
+  try {
+    const notifications = await Notification.find({ user: req.user.id });
+    res.status(200).json(notifications);
+  } catch (error) {
+    console.error('Error fetching notifications:', error.stack);
+    res.status(500).json({ message: 'Error fetching notifications', error: error.message });
+  }
+});
+
+// Home route
 app.get('/', (req, res) => {
   res.send('Welcome to the authentication API');
 });
