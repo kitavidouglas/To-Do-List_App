@@ -1,34 +1,23 @@
-// models/Task.js
-const mongoose = require('mongoose');
+import express, { json } from 'express';
+import connectDB from './config/db';
+import cors from 'cors';
+require('dotenv').config();
+import express from 'express';
+import { json } from 'express';
 
-const taskSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  description: { type: String },
-  dueDate: { type: Date },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // User association
-});
+const app = express();
+const port = process.env.PORT || 5000;
 
-module.exports = mongoose.model('Task', taskSchema);
+// Middleware
+app.use(json());
+app.use(cors({ origin: 'http://localhost:3000', methods: ['GET', 'POST', 'PUT', 'DELETE'], allowedHeaders: ['Content-Type', 'Authorization'] }));
 
-// models/Event.js
-const mongoose = require('mongoose');
+// Connect to MongoDB
+connectDB();
 
-const eventSchema = new mongoose.Schema({
-  title: { type: String, required: true },
-  description: { type: String },
-  date: { type: Date, required: true },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // User association
-});
+// Routes
+app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/tasks', require('./routes/taskRoutes'));
 
-module.exports = mongoose.model('Event', eventSchema);
-
-// models/Notification.js
-const mongoose = require('mongoose');
-
-const notificationSchema = new mongoose.Schema({
-  message: { type: String, required: true },
-  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }, // User association
-  read: { type: Boolean, default: false }, // Notification status
-});
-
-module.exports = mongoose.model('Notification', notificationSchema);
+// Start server
+app.listen(port, () => console.log(`Server running on port ${port}`));

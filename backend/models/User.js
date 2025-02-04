@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
+import { Schema, models, model } from 'mongoose';
+import { genSalt, hash } from 'bcryptjs';
 
 // Define the user schema
-const userSchema = new mongoose.Schema({
+const userSchema = new Schema({
     username: { type: String, unique: true }, // Optional if you are using email as unique identifier
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -12,8 +12,8 @@ const userSchema = new mongoose.Schema({
 userSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
     try {
-        const salt = await bcrypt.genSalt(10);
-        this.password = await bcrypt.hash(this.password, salt);
+        const salt = await genSalt(10);
+        this.password = await hash(this.password, salt);
         next();
     } catch (error) {
         next(error);
@@ -21,7 +21,7 @@ userSchema.pre('save', async function (next) {
 });
 
 // Use a pattern to avoid overwriting the model
-const User = mongoose.models.User || mongoose.model('User', userSchema);
+const User = models.User || model('User', userSchema);
 
-module.exports = User;
+export default User;
 

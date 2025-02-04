@@ -1,9 +1,9 @@
-const express = require('express');
-const Task = require('../models/Task');
-const Event = require('../models/Event');
-const { protect } = require('../middleware/authMiddleware');
+import { Router } from 'express';
+import Task, { find, findById } from '../models/Task';
+import Event, { find as _find } from '../models/Event';
+import { protect } from '../middleware/authMiddleware';
 
-const router = express.Router();
+const router = Router();
 
 // CRUD for Tasks
 router.post('/tasks', protect, async (req, res) => {
@@ -27,7 +27,7 @@ router.post('/tasks', protect, async (req, res) => {
 
 router.get('/tasks', protect, async (req, res) => {
   try {
-    const tasks = await Task.find({ user: req.user._id });
+    const tasks = await find({ user: req.user._id });
     res.status(200).json(tasks);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching tasks', error });
@@ -38,7 +38,7 @@ router.put('/tasks/:id', protect, async (req, res) => {
   const { title, description, category, reminder, completed } = req.body;
 
   try {
-    const task = await Task.findById(req.params.id);
+    const task = await findById(req.params.id);
 
     if (!task) {
       return res.status(404).json({ message: 'Task not found' });
@@ -82,11 +82,11 @@ router.post('/events', protect, async (req, res) => {
 
 router.get('/events', protect, async (req, res) => {
   try {
-    const events = await Event.find({ user: req.user._id });
+    const events = await _find({ user: req.user._id });
     res.status(200).json(events);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching events', error });
   }
 });
 
-module.exports = router;
+export default router;
